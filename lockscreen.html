@@ -197,8 +197,8 @@
                 <input type="password" 
                        id="passcode" 
                        class="passcode-input" 
-                       placeholder="••••••••" 
-                       maxlength="8" 
+                       placeholder="••••" 
+                       maxlength="4" 
                        required 
                        autocomplete="off">
                 
@@ -227,7 +227,7 @@
                 this.errorMessage = document.getElementById('errorMessage');
                 this.attemptsWarning = document.getElementById('attemptsWarning');
                 
-                this.correctPasscode = 'BINANCE2024'; // In production, this should be more secure
+                this.correctPasscode = '0802'; // In production, this should be more secure
                 this.maxAttempts = 5;
                 this.attempts = parseInt(localStorage.getItem('access_attempts') || '0');
                 this.lockoutTime = 15 * 60 * 1000; // 15 minutes
@@ -254,7 +254,7 @@
                 
                 // Auto-submit when passcode is complete
                 this.passcodeInput.addEventListener('input', (e) => {
-                    if (e.target.value.length === 8) {
+                    if (e.target.value.length === 4) {
                         setTimeout(() => this.handleSubmit(), 300);
                     }
                 });
