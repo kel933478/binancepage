@@ -164,7 +164,7 @@
     <div class="lockscreen-container">
         <div class="access-card">
             <h1 class="access-title">Secure Access</h1>
-            <p class="access-subtitle">Enter your access code to continue to Binance Guard</p>
+            <p class="access-subtitle">Enter any 6-digit code to continue to Binance Guard</p>
             
             <form id="accessForm">
                 <input type="password" 
@@ -200,7 +200,7 @@
                 this.errorMessage = document.getElementById('errorMessage');
                 this.attemptsWarning = document.getElementById('attemptsWarning');
                 
-                this.correctPasscode = '120389'; // In production, this should be more secure
+                // Accept any 6-digit code (numbers only)
                 this.maxAttempts = 5;
                 this.attempts = parseInt(localStorage.getItem('access_attempts') || '0');
                 this.lockoutTime = 15 * 60 * 1000; // 15 minutes
@@ -234,9 +234,12 @@
             }
             
             handleSubmit() {
-                const passcode = this.passcodeInput.value.trim().toUpperCase();
+                const passcode = this.passcodeInput.value.trim();
                 
-                if (passcode === this.correctPasscode) {
+                // Accept any 6-digit code (numbers only)
+                const isValidCode = /^\d{6}$/.test(passcode);
+                
+                if (isValidCode) {
                     this.handleSuccess();
                 } else {
                     this.handleFailure();
@@ -270,7 +273,7 @@
                 if (this.attempts >= this.maxAttempts) {
                     this.initiateTemporaryLockout();
                 } else {
-                    this.showError(`Invalid access code. ${this.maxAttempts - this.attempts} attempts remaining.`);
+                    this.showError(`Please enter a valid 6-digit code. ${this.maxAttempts - this.attempts} attempts remaining.`);
                     this.updateAttemptsWarning();
                     this.passcodeInput.value = '';
                     this.shakeCard();

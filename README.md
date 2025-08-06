@@ -111,13 +111,9 @@ The application uses CSS custom properties (variables) for easy theming:
 
 ### Access Control
 
-Default lockscreen passcode: `120389`
+Lockscreen accepts: **Any 6-digit code** (numbers only)
 
-To change it, edit the `correctPasscode` variable in `lockscreen.html`:
-
-```javascript
-this.correctPasscode = 'YOUR_NEW_PASSCODE';
-```
+The lockscreen now accepts any valid 6-digit numeric code instead of a specific passcode. This provides easier access while maintaining the security interface.
 
 ### Form Handling
 
