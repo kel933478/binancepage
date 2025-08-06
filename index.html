@@ -3,20 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://binance.com https://upload.wikimedia.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;">
-    <title>Binance Guard – API Connection</title>
+    <meta name="description" content="Binance Guard - Secure API key management and protection service for your cryptocurrency trading accounts">
+    <meta name="keywords" content="binance, api, security, cryptocurrency, trading, guard, protection">
+    <meta name="author" content="Binance Guard">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#f0b90b">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Binance Guard – Secure API Connection">
+    <meta property="og:description" content="Protect your Binance trading account with advanced API key security">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/5/57/Binance_Logo.png">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Binance Guard – Secure API Connection">
+    <meta name="twitter:description" content="Protect your Binance trading account with advanced API key security">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com https://binance.com https://upload.wikimedia.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline'; img-src 'self' https: data:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
+    <title>Binance Guard – Secure API Connection</title>
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://binance.com">
+    <link rel="dns-prefetch" href="https://upload.wikimedia.org">
     
     <!-- Preload critical resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preload" href="styles.css" as="style">
     <link rel="preload" href="script.js" as="script">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style">
     
     <!-- Styles -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="styles.css" rel="stylesheet">
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://binance.com/favicon.ico">
+    <link rel="apple-touch-icon" href="https://binance.com/favicon.ico">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Binance Guard",
+        "description": "Secure API key management for Binance trading accounts",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Web Browser"
+    }
+    </script>
 </head>
 <body>
     <div id="notification-container"></div>

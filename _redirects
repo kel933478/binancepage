@@ -1,0 +1,16 @@
+# Form submissions
+/  /  200  Role=form-submission
+
+# Clean URLs
+/index  /  301
+/home   /  301
+
+# Security - Block common attack vectors
+/wp-admin/*  /404.html  404
+/wp-login.php  /404.html  404
+/admin/*  /404.html  404
+/.env  /404.html  404
+/config/*  /404.html  404
+
+# Fallback for SPA routing
+/*  /404.html  404

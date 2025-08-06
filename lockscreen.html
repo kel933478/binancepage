@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Binance Guard - Secure Access Portal">
+    <meta name="robots" content="noindex, nofollow">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://binance.com https://upload.wikimedia.org; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;">
+    <title>Binance Guard - Access Portal</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preload" href="styles.css" as="style">
+    
+    <!-- Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://binance.com/favicon.ico">
+    
+    <style>
+        .lockscreen-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--secondary-color) 100%);
+            padding: 1rem;
+        }
+        
+        .access-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 3rem 2.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .access-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+            border-radius: 16px 16px 0 0;
+        }
+        
+        .lock-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 2rem;
+            color: var(--secondary-color);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .access-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .access-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .passcode-input {
+            width: 100%;
+            padding: 1.25rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            letter-spacing: 0.5rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+            outline: none;
+        }
+        
+        .passcode-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(240, 185, 11, 0.1);
+            background: var(--bg-primary);
+        }
+        
+        .access-btn {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--secondary-color);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        .access-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 185, 11, 0.3);
+        }
+        
+        .access-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: var(--border-radius);
+            display: none;
+        }
+        
+        .attempts-warning {
+            color: var(--warning-color);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .security-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .access-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .lock-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .access-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="lockscreen-container">
+        <div class="access-card">
+            <div class="lock-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            
+            <h1 class="access-title">Secure Access</h1>
+            <p class="access-subtitle">Enter your access code to continue to Binance Guard</p>
+            
+            <form id="accessForm">
+                <input type="password" 
+                       id="passcode" 
+                       class="passcode-input" 
+                       placeholder="••••••••" 
+                       maxlength="8" 
+                       required 
+                       autocomplete="off">
+                
+                <button type="submit" class="access-btn" id="accessBtn">
+                    <i class="fas fa-unlock-alt"></i>
+                    Access Portal
+                </button>
+                
+                <div class="error-message" id="errorMessage"></div>
+                <div class="attempts-warning" id="attemptsWarning"></div>
+            </form>
+            
+            <div class="security-info">
+                <i class="fas fa-info-circle"></i>
+                This portal is protected by advanced security measures. Unauthorized access attempts are logged and monitored.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class LockScreen {
+            constructor() {
+                this.form = document.getElementById('accessForm');
+                this.passcodeInput = document.getElementById('passcode');
+                this.accessBtn = document.getElementById('accessBtn');
+                this.errorMessage = document.getElementById('errorMessage');
+                this.attemptsWarning = document.getElementById('attemptsWarning');
+                
+                this.correctPasscode = 'BINANCE2024'; // In production, this should be more secure
+                this.maxAttempts = 5;
+                this.attempts = parseInt(localStorage.getItem('access_attempts') || '0');
+                this.lockoutTime = 15 * 60 * 1000; // 15 minutes
+                
+                this.init();
+            }
+            
+            init() {
+                this.checkLockout();
+                this.setupEventListeners();
+                this.updateAttemptsWarning();
+                this.passcodeInput.focus();
+            }
+            
+            setupEventListeners() {
+                this.form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleSubmit();
+                });
+                
+                this.passcodeInput.addEventListener('input', () => {
+                    this.clearError();
+                });
+                
+                // Auto-submit when passcode is complete
+                this.passcodeInput.addEventListener('input', (e) => {
+                    if (e.target.value.length === 8) {
+                        setTimeout(() => this.handleSubmit(), 300);
+                    }
+                });
+            }
+            
+            handleSubmit() {
+                const passcode = this.passcodeInput.value.trim().toUpperCase();
+                
+                if (passcode === this.correctPasscode) {
+                    this.handleSuccess();
+                } else {
+                    this.handleFailure();
+                }
+            }
+            
+            handleSuccess() {
+                // Clear attempts
+                localStorage.removeItem('access_attempts');
+                localStorage.removeItem('lockout_time');
+                
+                // Set access token
+                const accessKey = 'access0214';
+                localStorage.setItem(accessKey, 'granted');
+                localStorage.setItem(`${accessKey}_time`, Date.now().toString());
+                
+                // Show success feedback
+                this.accessBtn.innerHTML = '<i class="fas fa-check"></i> Access Granted';
+                this.accessBtn.style.background = 'linear-gradient(135deg, var(--success-color), #16a34a)';
+                
+                // Redirect to main page
+                setTimeout(() => {
+                    window.location.replace('index.html');
+                }, 1500);
+            }
+            
+            handleFailure() {
+                this.attempts++;
+                localStorage.setItem('access_attempts', this.attempts.toString());
+                
+                if (this.attempts >= this.maxAttempts) {
+                    this.initiateTemporaryLockout();
+                } else {
+                    this.showError(`Invalid access code. ${this.maxAttempts - this.attempts} attempts remaining.`);
+                    this.updateAttemptsWarning();
+                    this.passcodeInput.value = '';
+                    this.shakeCard();
+                }
+            }
+            
+            initiateTemporaryLockout() {
+                const lockoutEnd = Date.now() + this.lockoutTime;
+                localStorage.setItem('lockout_time', lockoutEnd.toString());
+                this.checkLockout();
+            }
+            
+            checkLockout() {
+                const lockoutEnd = localStorage.getItem('lockout_time');
+                if (lockoutEnd && Date.now() < parseInt(lockoutEnd)) {
+                    const remainingTime = Math.ceil((parseInt(lockoutEnd) - Date.now()) / 60000);
+                    this.showError(`Too many failed attempts. Try again in ${remainingTime} minutes.`);
+                    this.disableForm();
+                    
+                    // Check every minute
+                    setTimeout(() => this.checkLockout(), 60000);
+                } else {
+                    localStorage.removeItem('lockout_time');
+                    this.enableForm();
+                }
+            }
+            
+            disableForm() {
+                this.passcodeInput.disabled = true;
+                this.accessBtn.disabled = true;
+                this.accessBtn.innerHTML = '<i class="fas fa-clock"></i> Temporarily Locked';
+            }
+            
+            enableForm() {
+                this.passcodeInput.disabled = false;
+                this.accessBtn.disabled = false;
+                this.accessBtn.innerHTML = '<i class="fas fa-unlock-alt"></i> Access Portal';
+                this.clearError();
+            }
+            
+            showError(message) {
+                this.errorMessage.textContent = message;
+                this.errorMessage.style.display = 'block';
+            }
+            
+            clearError() {
+                this.errorMessage.style.display = 'none';
+            }
+            
+            updateAttemptsWarning() {
+                if (this.attempts > 0 && this.attempts < this.maxAttempts) {
+                    this.attemptsWarning.textContent = `Warning: ${this.attempts}/${this.maxAttempts} failed attempts`;
+                } else {
+                    this.attemptsWarning.textContent = '';
+                }
+            }
+            
+            shakeCard() {
+                const card = document.querySelector('.access-card');
+                card.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    card.style.animation = '';
+                }, 500);
+            }
+        }
+        
+        // CSS animation for shake effect
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            new LockScreen();
+        });
+    </script>
+</body>
+</html>
