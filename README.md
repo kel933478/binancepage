@@ -111,7 +111,7 @@ The application uses CSS custom properties (variables) for easy theming:
 
 ### Access Control
 
-Default lockscreen passcode: `0802`
+Default lockscreen passcode: `080204`
 
 To change it, edit the `correctPasscode` variable in `lockscreen.html`:
 
