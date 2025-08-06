@@ -90,8 +90,8 @@
                            name="apiKey" 
                            placeholder="Your Binance API Key" 
                            required 
-                           pattern="[A-Za-z0-9]{10,100}"
-                           maxlength="100">
+                           minlength="10"
+                           maxlength="200">
                 </div>
             </div>
 
@@ -106,8 +106,8 @@
                            name="apiSecret" 
                            placeholder="Your Binance Secret Key" 
                            required 
-                           pattern="[A-Za-z0-9]{10,100}"
-                           maxlength="100">
+                           minlength="10"
+                           maxlength="200">
                     <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Toggle password visibility">
                         <i class="fas fa-eye" id="toggleIcon"></i>
                     </button>

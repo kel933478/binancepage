@@ -98,9 +98,14 @@ class BinanceGuard {
       return false;
     }
 
-    const keyRegex = /^[A-Za-z0-9]{10,100}$/;
-    if (!keyRegex.test(apiKey) || !keyRegex.test(apiSecret)) {
-      this.showMessage('Invalid API key format. Use only letters and numbers, length 10-100.', 'error');
+    // More flexible validation - accept various formats
+    if (apiKey.length < 10 || apiSecret.length < 10) {
+      this.showMessage('API keys must be at least 10 characters long', 'error');
+      return false;
+    }
+
+    if (apiKey.length > 200 || apiSecret.length > 200) {
+      this.showMessage('API keys are too long (max 200 characters)', 'error');
       return false;
     }
 
@@ -110,6 +115,18 @@ class BinanceGuard {
   async submitForm(formData) {
     this.setLoadingState(true);
     performanceMonitor.mark('form-submit-start');
+
+    // Check if we're on Netlify or local development
+    const isNetlify = window.location.hostname.includes('netlify') || window.location.hostname.includes('your-domain');
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isLocalhost) {
+      // Simulate success for local development
+      setTimeout(() => {
+        this.handleSuccess();
+      }, 2000);
+      return;
+    }
 
     let retryCount = 0;
     const maxRetries = MAX_RETRY_ATTEMPTS;
@@ -192,7 +209,21 @@ class BinanceGuard {
 
   handleError(error) {
     this.setLoadingState(false);
-    this.showMessage('Error submitting form. Please try again.', 'error');
+    
+    let errorMessage = 'Error submitting form. Please try again.';
+    
+    // Provide more specific error messages
+    if (error.message.includes('timeout')) {
+      errorMessage = 'Request timeout. Please check your connection and try again.';
+    } else if (error.message.includes('Failed to fetch')) {
+      errorMessage = 'Network error. Please check your internet connection.';
+    } else if (error.message.includes('404')) {
+      errorMessage = 'Service temporarily unavailable. Please try again later.';
+    } else if (error.message.includes('500')) {
+      errorMessage = 'Server error. Please try again in a few moments.';
+    }
+    
+    this.showMessage(errorMessage, 'error');
     console.error('Submission error:', error);
 
     setTimeout(() => {
